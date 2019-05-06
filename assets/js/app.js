@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
 
 import Light from "./components/light";
+
 import rootReducer from "./reducers";
 import rootSaga from "./sagas";
 
@@ -27,7 +28,9 @@ const store = createStore(
 saga.run(rootSaga);
 
 const App = () => (
-  <Light/>
+  <div>
+    <Light />
+  </div>
 );
 
 ReactDom.render(

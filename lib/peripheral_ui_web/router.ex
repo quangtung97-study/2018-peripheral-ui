@@ -22,6 +22,7 @@ defmodule PeripheralUiWeb.Router do
   scope "/api", PeripheralUiWeb do
     pipe_through :api
 
+    post "/light/change/:value", LightController, :change
     post "/light/:action", LightController, :toggle
   end
 end

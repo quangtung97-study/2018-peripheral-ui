@@ -1,12 +1,18 @@
-import { put, takeEvery, all, call } from "redux-saga/effects";
+import { put, takeEvery, takeLatest, all, call, delay } from "redux-saga/effects";
 
 import {
   TURN_ON_ASYNC,
   TURN_OFF_ASYNC,
-  LIGHT_ERROR,
+  CHANGE_VALUE_ASYNC,
 } from "./actions/light";
 
-import { turnOn, turnOff, lightError } from "./actions/light";
+import {
+  turnOn,
+  turnOff,
+  lightError,
+  changeLightValue,
+  changeLightError,
+} from "./actions/light";
 
 function *turnOnAsync() {
   try {
@@ -34,13 +40,29 @@ function *turnOffAsync() {
       yield put(lightError());
   } 
   catch (error) {
-      yield put(lightError());
+    yield put(lightError());
+  }
+}
+
+function *changeLightValueAsync(e) {
+  yield delay(50);
+  try {
+    const res = yield call(fetch, "/api/light/change/" + e.value, { method: "POST" });
+    const json = yield call(r => r.json(), res);
+    if (json.status == "OK")
+      yield put(changeLightValue(e.value));
+    else
+      yield put(changeLightError());
+  }
+  catch (error) {
+    yield put(changeLightError());
   }
 }
 
 function *watchLight() {
   yield takeEvery(TURN_ON_ASYNC, turnOnAsync);
   yield takeEvery(TURN_OFF_ASYNC, turnOffAsync);
+  yield takeLatest(CHANGE_VALUE_ASYNC, changeLightValueAsync);
 }
 
 export default function *rootSaga() {
